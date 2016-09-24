@@ -16,16 +16,19 @@ val displayRecords = { session: Session ->
     }
 }
 
-fun useDriver(driver: Driver) {
+fun useDriver(driver: Driver, vararg ops: (Session) -> Any) {
     val session = driver.session()
 
-    createRecords(session)
-    displayRecords(session)
+    for (op in ops) {
+        op(session)
+    }
 
     session.close()
     driver.close()
 }
 
 fun main(args: Array<String>) {
-    useDriver(GraphDatabase.driver("bolt://192.168.99.100", AuthTokens.basic("neo4j", "admin")))
+    useDriver(GraphDatabase.driver("bolt://192.168.99.100", AuthTokens.basic("neo4j", "admin")),
+            createRecords,
+            displayRecords)
 }
