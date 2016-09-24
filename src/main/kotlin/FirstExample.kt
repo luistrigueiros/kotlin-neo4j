@@ -1,13 +1,14 @@
 import org.neo4j.driver.v1.AuthTokens
+import org.neo4j.driver.v1.Driver
 import org.neo4j.driver.v1.GraphDatabase
 import org.neo4j.driver.v1.Session
 
 
-val createRecords = {session: Session ->
+val createRecords = { session: Session ->
     session.run("CREATE (a:Person {name:'Arthur', title:'King'})")
 }
 
-val displayRecords = { session : Session ->
+val displayRecords = { session: Session ->
     val result = session.run("MATCH (a:Person) WHERE a.name = 'Arthur' RETURN a.name AS name, a.title AS title")
     while (result.hasNext()) {
         val record = result.next()
@@ -15,10 +16,7 @@ val displayRecords = { session : Session ->
     }
 }
 
-
-fun main(args: Array<String>) {
-
-    val driver = GraphDatabase.driver("bolt://192.168.99.100", AuthTokens.basic("neo4j", "admin"))
+fun useDriver(driver: Driver) {
     val session = driver.session()
 
     createRecords(session)
@@ -26,5 +24,8 @@ fun main(args: Array<String>) {
 
     session.close()
     driver.close()
+}
 
+fun main(args: Array<String>) {
+    useDriver(GraphDatabase.driver("bolt://192.168.99.100", AuthTokens.basic("neo4j", "admin")))
 }
