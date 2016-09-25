@@ -18,11 +18,7 @@ val displayRecords = { session: Session ->
 
 fun useDriver(driver: Driver, vararg ops: (Session) -> Any) {
     val session = driver.session()
-
-    for (op in ops) {
-        op(session)
-    }
-
+    ops.map { it(session) }
     session.close()
     driver.close()
 }
